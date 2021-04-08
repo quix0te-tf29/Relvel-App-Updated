@@ -1,0 +1,90 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class DisplayRelVelVectors : MonoBehaviour
+{
+    public LineRenderer RelativeVector;
+    public LineRenderer GuideCourseAndSpeedVector;
+    public LineRenderer TrueCTSVector;
+    public float amount;
+
+    public LineSlider testSlider;
+
+	// Use this for initialization
+	void Start ()
+    {
+		
+	}
+	
+	// Update is called once per frame
+	void Update ()
+    {
+        
+	}
+
+    public void clearRelativeVector()
+    {
+        RelativeVector.SetPosition(0, Vector3.zero);
+        RelativeVector.SetPosition(1, Vector3.zero);
+    }
+
+    public void clearGuideCRSAndSpeedVector()
+    {
+        GuideCourseAndSpeedVector.SetPosition(0, Vector3.zero);
+        GuideCourseAndSpeedVector.SetPosition(1, Vector3.zero);
+    }
+
+    public void clearTrueCTSVector()
+    {
+        TrueCTSVector.SetPosition(0, Vector3.zero);
+        TrueCTSVector.SetPosition(1, Vector3.zero);
+    }
+
+    private Vector2 calculatePointOnLine(float Velocity)
+    {
+        Vector2 temp1 = new Vector2(RelativeVector.GetPosition(1).x, RelativeVector.GetPosition(1).z);
+        Vector2 temp2 = new Vector2(RelativeVector.GetPosition(0).x, RelativeVector.GetPosition(0).z);
+        Vector2 slope = temp1 - temp2;
+
+        slope = slope.normalized;
+
+        testSlider.Shift(RelativeVector.GetPosition(0), slope, Velocity);
+
+        return slope;
+    }
+
+
+    public void editRelativeVector(Vector2 start,  Vector2 end)
+    {
+        end = end * -1;
+        end += start;
+        //Start Position
+        Vector3 tempStart = Vector3.zero;
+        tempStart = GuideCourseAndSpeedVector.GetPosition(1);
+        RelativeVector.SetPosition(0, tempStart);
+
+        //end position
+        Vector3 tempEnd = new Vector3(tempStart.x + end.x, tempStart.y, tempStart.z + end.y);
+
+        tempEnd.x = GuideCourseAndSpeedVector.GetPosition(1).x + end.x * 100;
+        tempEnd.z = GuideCourseAndSpeedVector.GetPosition(1).z + end.y * 100;
+        RelativeVector.SetPosition(1, tempEnd);
+
+       // testSlider.transform.localPosition = RelativeVector.GetPosition(0);
+    }
+
+    public void editGuideCourseandSpeedVector(float magnitude, float direction)
+    {
+        GuideCourseAndSpeedVector.SetPosition(0, Vector3.zero);
+        GuideCourseAndSpeedVector.SetPosition(1, Vector3.forward * magnitude * 100);
+    }
+
+    public void editTrueCTSVector(Vector2 direction)
+    {
+        print(direction.ToString());
+        Vector3 temp = new Vector3(direction.x, 0, direction.y);
+        TrueCTSVector.SetPosition(0, Vector3.zero);
+        TrueCTSVector.SetPosition(1, temp * 1000);
+    }
+}

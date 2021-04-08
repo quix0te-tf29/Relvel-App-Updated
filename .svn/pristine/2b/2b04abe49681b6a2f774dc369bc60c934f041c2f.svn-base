@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2017
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rel Vel Calculator.Plugins", "Rel Vel Calculator.Plugins.csproj", "{79BF4CE6-830C-9B7B-5044-533A56F0D7EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rel Vel Calculator", "Rel Vel Calculator.csproj", "{01653136-C272-6D87-DC14-DDD8583924DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rel Vel Calculator.Editor.Plugins", "Rel Vel Calculator.Editor.Plugins.csproj", "{70029F62-5687-72AF-8AB8-0BF8EFAA194A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79BF4CE6-830C-9B7B-5044-533A56F0D7EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79BF4CE6-830C-9B7B-5044-533A56F0D7EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79BF4CE6-830C-9B7B-5044-533A56F0D7EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79BF4CE6-830C-9B7B-5044-533A56F0D7EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01653136-C272-6D87-DC14-DDD8583924DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01653136-C272-6D87-DC14-DDD8583924DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01653136-C272-6D87-DC14-DDD8583924DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01653136-C272-6D87-DC14-DDD8583924DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70029F62-5687-72AF-8AB8-0BF8EFAA194A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70029F62-5687-72AF-8AB8-0BF8EFAA194A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70029F62-5687-72AF-8AB8-0BF8EFAA194A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70029F62-5687-72AF-8AB8-0BF8EFAA194A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

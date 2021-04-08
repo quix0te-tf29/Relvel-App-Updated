@@ -1,0 +1,298 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+
+class FormationData
+{
+    private static FormationData instance;
+    private FormationData() { }
+
+    public static FormationData Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new FormationData();
+            }
+            return instance;
+        }
+    }
+
+    public static Ship GuideShip;
+    public static Ship OwnShip;
+    public static ArrayList AllConsorts;
+
+    private float StandardDistance;
+    private float StationingSpeed;
+    private float FallbackSpeed;
+
+    private float GuideSpd;
+    private float GuideCRS;
+
+    private float GuideBears;
+    private float RangeToGuide;
+
+    private float GuideWillBear;
+    private float NewRangeToGuide;
+
+    public float standardDistance { get { return StandardDistance; } set { StandardDistance = value; } }
+    public float stationingSpeed { get { return StationingSpeed; } set { StationingSpeed = value; } }
+    public float fallbackSpeed { get { return FallbackSpeed; } set { FallbackSpeed = value; } }
+
+    public float guideSpd { get { return GuideSpd; } set { GuideSpd = value; } }
+    public float guideCRS { get { return GuideCRS; } set { GuideCRS = value; } }
+
+    public float guideBears { get { return GuideBears; } set { GuideBears = value; } }
+    public float rangeToGuide { get { return RangeToGuide; } set { RangeToGuide = value; } }
+
+    public float guideWillBear { get { return GuideWillBear; } set { GuideWillBear = value; } }
+    public float newRangeToGuide { get { return NewRangeToGuide; } set { NewRangeToGuide = value; } }
+}
+
+public class UIManager : MonoBehaviour
+{
+    //User Interface Objects
+
+    //UI CANVAS
+    public Canvas UI;
+    //REL VEL LINES THAT GET DRAWN ON THE BOARD
+    public DisplayRelVelVectors VectorDisplay;
+    //THE STATION MARKER
+    public StationMark marker;
+    //THE COMPASS RING
+    public CompassRing compassRing;
+
+    //ALL TEXT BOXES
+    public Text CTSText;
+    public Text SpeedText;
+    public Text KB;
+    public Text KR;
+
+    //ALL DROPDOWN MENUS
+    public Dropdown SpeedOfManeuverField;
+    public Dropdown RangeToGuideField;
+    public Dropdown NewGuideDistanceField;
+
+    //ALL BUTTONS
+    public Button CalculateButton;
+    public Button ExecuteButton;
+    public Button ResetButton;
+    public Button SetFormationStateButton;
+
+    //ALL INPUT FIELS
+    public InputField GWBField;
+    public InputField GuideBearsField;
+    public InputField GuideSpdField;
+    public InputField GuideCRSField;
+    public InputField SSpeedField;
+    public InputField StandardDistanceField;
+
+    public List<InputField> FormationStateUIObjects;
+    public List<InputField> RelVelCalcUIObjects;
+
+    // Use this for initialization
+    void Start()
+    {
+        InitialiseUI();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
+    /// <summary>
+    /// called at the start to initialize the interface to default values
+    /// </summary>
+    void InitialiseUI()
+    {
+        //Add the following interface controls to the Formation State Control List
+        FormationStateUIObjects.Add(GuideCRSField);
+        FormationStateUIObjects.Add(GuideSpdField);
+        FormationStateUIObjects.Add(SSpeedField);
+        FormationStateUIObjects.Add(StandardDistanceField);
+
+        //Add the following interface controls to the Rel Vel Controls list
+        RelVelCalcUIObjects.Add(GWBField);
+        RelVelCalcUIObjects.Add(GuideBearsField);
+
+        CalculateButton.interactable = false;
+        ExecuteButton.interactable = false;
+        ResetButton.interactable = false;
+
+        //marker.MoveToPosition(new Vector3(OwnShip.transform.position.x, 55, OwnShip.transform.position.z));
+
+    }
+
+    /// <summary>
+    /// Pulls data from the user interface fields and makes it accessible to the program
+    /// </summary>
+    void PullInterfaceData()
+    {
+        //if fields are blank or contain invalid data, exit the method without copying data
+        if (CheckInputFieldValidity(FormationStateUIObjects) == false | CheckInputFieldValidity(RelVelCalcUIObjects) == false)
+        {
+            print("Error, Formation State Fields have been left blank or contain invalid values");
+            return;
+        }
+
+        float tempCRS;
+        float tempSPD;
+        float tempGB;
+        float tempGWB;
+        float tempSD;
+
+        float.TryParse(StandardDistanceField.text, out tempSD);
+
+        float.TryParse(GuideCRSField.text, out tempCRS);
+        float.TryParse(GuideSpdField.text, out tempSPD); 
+        float.TryParse(GuideBearsField.text, out tempGB); 
+        float.TryParse(GWBField.text, out tempGWB);
+
+        FormationData.Instance.guideCRS = tempCRS;
+        FormationData.Instance.guideSpd = tempSPD;
+        FormationData.Instance.guideBears = tempGB;
+        FormationData.Instance.guideWillBear = tempGWB;
+
+        if (RangeToGuideField.value == 1)
+        {
+            FormationData.Instance.rangeToGuide = tempSD * 2;
+        }
+        else
+        {
+            FormationData.Instance.rangeToGuide = tempSD;
+        }
+        if (NewGuideDistanceField.value == 1)
+        {
+            FormationData.Instance.newRangeToGuide = tempSD * 2;
+        }
+        else
+        {
+            FormationData.Instance.newRangeToGuide = tempSD;
+        }
+    }
+
+    /// <summary>
+    /// Checks to ensure none of the Formation State fields have been left blank,  if the fields are blank, the calculate button will remain locked, if all fields have valid inputs the calculate button becomes unlocked
+    /// </summary>
+    /// <returns></returns>
+    private bool CheckInputFieldValidity(List<InputField> list)
+    {
+        foreach (InputField field in list)
+        {
+            if (field.text == "")
+            {
+                CalculateButton.interactable = false;
+                ExecuteButton.interactable = false;
+                return false;
+            }
+        }
+        return true;
+    }
+    /// <summary>
+    /// Resets the text on the right hand interface in order to avoid confusing the user.
+    /// </summary>
+    private void ResetInterfaceText()
+    {
+        CTSText.text = "CRS: N/A";
+        SpeedText.text = "SPD: N/A";
+        KR.text = "KR: N/A";
+        KB.text = "KB: N/A";
+    }
+
+    /// <summary>
+    /// Handles when the "Set Formation State" button is clicked
+    /// </summary>
+    void OnSetFormationState()
+    {
+        
+    }
+
+    /// <summary>
+    /// gets called any time one of the relvel value fields get altered
+    /// </summary>
+    void OnRelvelValueAltered()
+    {
+        ResetInterfaceText();
+        EnableActionControls(false);
+        PullInterfaceData();
+    }
+
+    /// <summary>
+    /// gets called whenever calculate is pressed
+    /// </summary>
+    void OnCalculatePress()
+    {
+
+
+    }
+
+    /// <summary>
+    /// gets called whenever execute is pressed
+    /// </summary>
+    void OnExecutePress()
+    {
+        EnableActionControls(false);
+        EnableFormationStateControls(false);
+        EnableActionControls(false);
+        ResetButton.interactable = true;
+    }
+
+    /// <summary>
+    /// gets called whenever reset is pressed
+    /// </summary>
+    void OnResetPress()
+    {
+        ResetButton.interactable = false;
+    }
+
+    /// <summary>
+    /// Disables or enables all interface controls relating to the "maneuvering board"
+    /// </summary>
+    /// <param name="state"></param>
+    public void EnableRelvelControls(bool state)
+    {
+        GWBField.interactable = state;
+        GuideBearsField.interactable = state;
+        NewGuideDistanceField.interactable = state;
+        RangeToGuideField.interactable = state;
+        SpeedOfManeuverField.interactable = state;
+    }
+
+    /// <summary>
+    /// Disables or enables the execute and calculate buttons
+    /// </summary>
+    /// <param name="state"></param>
+    public void EnableActionControls(bool state)
+    {
+        ExecuteButton.interactable = state;
+        CalculateButton.interactable = state;
+    }
+
+    /// <summary>
+    /// enables or disables all controls relating to the formation state panel
+    /// </summary>
+    /// <param name="state"></param>
+    public void EnableFormationStateControls(bool state)
+    {
+        GuideCRSField.interactable = state;
+        SSpeedField.interactable = state;
+        GuideSpdField.interactable = state;
+        StandardDistanceField.interactable = state;
+        if (state)
+        {
+            Text text = SetFormationStateButton.GetComponentInChildren<Text>();
+            text.text = "Set Formation";
+        }
+        else
+        {
+            Text text = SetFormationStateButton.GetComponentInChildren<Text>();
+            ResetInterfaceText();
+            text.text = "Edit Formation";
+        }
+    }
+}

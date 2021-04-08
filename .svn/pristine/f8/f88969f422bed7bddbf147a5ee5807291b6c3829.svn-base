@@ -1,0 +1,38 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class SpeedRing : MonoBehaviour
+{
+    public float radius;
+    public float thetaScale = 0.01f;
+    private LineRenderer circleDrawer;
+    float Theta = 0f;
+
+    // Use this for initialization
+    void Start ()
+    {
+        circleDrawer = GetComponent<LineRenderer>();
+        Draw();
+    }
+	
+	// Update is called once per frame
+	void Update () {
+        
+	}
+
+
+    public void Draw()
+    {
+        Theta = 0f;
+        int Size = (int)((1f / thetaScale) + 1f);
+        circleDrawer.positionCount = Size;
+        for (int i = 0; i < Size; i++)
+        {
+            Theta += (2.0f * Mathf.PI * thetaScale);
+            float x = radius * Mathf.Cos(Theta);
+            float y = radius * Mathf.Sin(Theta);
+            circleDrawer.SetPosition(i, new Vector3(x, 0, y));
+        }
+    }
+}
